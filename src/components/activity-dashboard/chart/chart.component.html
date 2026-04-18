@@ -1,0 +1,87 @@
+<div class="chart-container" [class.loading-state]="loading">
+  
+  <!-- Loading State -->
+  <div *ngIf="loading" class="chart-loading">
+    <div class="loading-spinner"></div>
+    <p>Loading chart data...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !hasData" class="chart-empty">
+    <div class="empty-icon">📊</div>
+    <p>{{ emptyMessage }}</p>
+  </div>
+
+  <!-- Chart Content -->
+  <div *ngIf="!loading && hasData" class="chart-content">
+    
+    <!-- Bar Chart -->
+    <ngx-charts-bar-vertical 
+      *ngIf="type === 'bar'"
+      [results]="data"
+      [view]="chartConfig.view"
+      [scheme]="chartConfig.colorScheme"
+      [showXAxis]="chartConfig.showXAxis"
+      [showYAxis]="chartConfig.showYAxis"
+      [gradient]="chartConfig.gradient"
+      [showLegend]="chartConfig.showLegend"
+      [showXAxisLabel]="chartConfig.showXAxisLabel"
+      [showYAxisLabel]="chartConfig.showYAxisLabel"
+      [xAxisLabel]="chartConfig.xAxisLabel"
+      [yAxisLabel]="chartConfig.yAxisLabel"
+      (select)="onSelect($event)"
+      (activate)="onActivate($event)">
+    </ngx-charts-bar-vertical>
+
+    <!-- Line Chart -->
+    <ngx-charts-line-chart 
+      *ngIf="type === 'line'"
+      [results]="data"
+      [view]="chartConfig.view"
+      [scheme]="chartConfig.colorScheme"
+      [showXAxis]="chartConfig.showXAxis"
+      [showYAxis]="chartConfig.showYAxis"
+      [gradient]="chartConfig.gradient"
+      [showLegend]="chartConfig.showLegend"
+      [showXAxisLabel]="chartConfig.showXAxisLabel"
+      [showYAxisLabel]="chartConfig.showYAxisLabel"
+      [xAxisLabel]="chartConfig.xAxisLabel"
+      [yAxisLabel]="chartConfig.yAxisLabel"
+      [timeline]="chartConfig.timeline"
+      (select)="onSelect($event)"
+      (activate)="onActivate($event)">
+    </ngx-charts-line-chart>
+
+    <!-- Pie Chart -->
+    <ngx-charts-pie-chart 
+      *ngIf="type === 'pie'"
+      [results]="data"
+      [view]="chartConfig.view"
+      [scheme]="chartConfig.colorScheme"
+      [gradient]="chartConfig.gradient"
+      [showLegend]="chartConfig.showLegend"
+      (select)="onSelect($event)"
+      (activate)="onActivate($event)">
+    </ngx-charts-pie-chart>
+
+    <!-- Area Chart -->
+    <ngx-charts-area-chart 
+      *ngIf="type === 'area'"
+      [results]="data"
+      [view]="chartConfig.view"
+      [scheme]="chartConfig.colorScheme"
+      [showXAxis]="chartConfig.showXAxis"
+      [showYAxis]="chartConfig.showYAxis"
+      [gradient]="chartConfig.gradient"
+      [showLegend]="chartConfig.showLegend"
+      [showXAxisLabel]="chartConfig.showXAxisLabel"
+      [showYAxisLabel]="chartConfig.showYAxisLabel"
+      [xAxisLabel]="chartConfig.xAxisLabel"
+      [yAxisLabel]="chartConfig.yAxisLabel"
+      [timeline]="chartConfig.timeline"
+      (select)="onSelect($event)"
+      (activate)="onActivate($event)">
+    </ngx-charts-area-chart>
+
+  </div>
+</div>

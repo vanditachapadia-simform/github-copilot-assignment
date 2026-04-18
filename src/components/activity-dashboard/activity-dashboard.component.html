@@ -1,0 +1,265 @@
+<div class="activity-dashboard">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">
+      <span class="title-icon">📊</span>
+      Activity Dashboard
+    </h1>
+    <p class="dashboard-subtitle">Monitor user activity and engagement metrics</p>
+  </div>
+
+  <div *ngIf="state$ | async as state" class="dashboard-content">
+    
+    <!-- Loading State -->
+    <div *ngIf="state.loading" class="loading-container" role="status" aria-live="polite">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading dashboard data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="state.error && !state.loading" class="error-container" role="alert">
+      <div class="error-icon">⚠️</div>
+      <div class="error-content">
+        <h3>Unable to Load Dashboard</h3>
+        <p>{{ state.error }}</p>
+        <button class="btn btn-primary" (click)="loadInitialData()">
+          Retry
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div *ngIf="!state.loading && !state.error" class="dashboard-main">
+      
+      <!-- Filters Section -->
+      <section class="filters-section" aria-labelledby="filters-heading">
+        <h2 id="filters-heading" class="section-title">Filters</h2>
+        
+        <div class="filters-grid">
+          <!-- Date Range Filter -->
+          <div class="filter-group">
+            <label class="filter-label">Date Range</label>
+            <div class="date-range">
+              <input 
+                type="date" 
+                class="date-input"
+                [value]="state.filters.startDate ? state.filters.startDate.toISOString().split('T')[0] : ''"
+                (change)="onStartDateChange($event)"
+                aria-label="Start date">
+              <span class="date-separator">to</span>
+              <input 
+                type="date" 
+                class="date-input"
+                [value]="state.filters.endDate ? state.filters.endDate.toISOString().split('T')[0] : ''"
+                (change)="onEndDateChange($event)"
+                aria-label="End date">
+            </div>
+          </div>
+
+          <!-- User Filter -->
+          <div class="filter-group">
+            <label class="filter-label" for="user-filter">User</label>
+            <select 
+              id="user-filter"
+              class="filter-select"
+              [value]="state.filters.selectedUserId || ''"
+              (change)="onUserFilterChange($any($event.target).value ? +$any($event.target).value : null)">
+              <option value="">All Users</option>
+              <option *ngFor="let user of state.users" [value]="user.id">
+                {{ user.name }} ({{ user.department }})
+              </option>
+            </select>
+          </div>
+
+          <!-- Activity Type Filter -->
+          <div class="filter-group">
+            <label class="filter-label" for="activity-type-filter">Activity Type</label>
+            <select 
+              id="activity-type-filter"
+              class="filter-select"
+              [value]="state.filters.activityType || ''"
+              (change)="onActivityTypeFilterChange($any($event.target).value || null)">
+              <option value="">All Activities</option>
+              <option *ngFor="let type of activityTypes" [value]="type">
+                {{ getActivityTypeDisplayName(type) }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Filter Actions -->
+          <div class="filter-actions">
+            <button class="btn btn-secondary" (click)="resetFilters()" [disabled]="state.loading">
+              Reset Filters
+            </button>
+            <button class="btn btn-primary" (click)="onExportToCsv()" [disabled]="state.loading">
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Summary Cards -->
+      <section class="summary-section" aria-labelledby="summary-heading" *ngIf="summary$ | async as summary">
+        <h2 id="summary-heading" class="section-title">Summary</h2>
+        
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-icon">📈</div>
+            <div class="summary-content">
+              <div class="summary-value">{{ summary.totalActivities | number }}</div>
+              <div class="summary-label">Total Activities</div>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">⏱️</div>
+            <div class="summary-content">
+              <div class="summary-value">{{ formatDuration(summary.totalDuration) }}</div>
+              <div class="summary-label">Total Duration</div>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">📊</div>
+            <div class="summary-content">
+              <div class="summary-value">{{ formatDuration(summary.averageDuration) }}</div>
+              <div class="summary-label">Avg Duration</div>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">👤</div>
+            <div class="summary-content">
+              <div class="summary-value">{{ summary.mostActiveUser }}</div>
+              <div class="summary-label">Most Active User</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts-section" aria-labelledby="charts-heading">
+        <h2 id="charts-heading" class="section-title">Activity Analytics</h2>
+        
+        <div class="charts-grid">
+          
+          <!-- Daily Activity Bar Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Daily Activity</h3>
+              <span class="chart-subtitle">Activities per day</span>
+            </div>
+            
+            <div class="chart-wrapper" *ngIf="state.dailyData.length > 0 && state.dailyData[0].series.length > 0; else noDataTemplate">
+              <div class="custom-bar-chart">
+                <div *ngFor="let item of state.dailyData[0].series.slice(0, 7)" class="bar-item">
+                  <div class="bar-container">
+                    <div 
+                      class="bar" 
+                      [style.height.%]="getBarHeight(item.value, getMaxValue(state.dailyData[0].series))">
+                      <span class="bar-value">{{ item.value }}</span>
+                    </div>
+                  </div>
+                  <div class="bar-label">{{ item.name }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Trend Line Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Weekly Trend</h3>
+              <span class="chart-subtitle">Activity trend over time</span>
+            </div>
+            
+            <div class="chart-wrapper" *ngIf="state.weeklyData.length > 0 && state.weeklyData[0].series.length > 0; else noDataTemplate">
+              <div class="custom-line-chart">
+                <div class="line-chart-container">
+                  <svg class="line-chart-svg" viewBox="0 0 400 200">
+                    <defs>
+                      <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#667eea" />
+                        <stop offset="100%" stop-color="#764ba2" />
+                      </linearGradient>
+                    </defs>
+                    <path 
+                      [attr.d]="getLineChartPath(state.weeklyData[0].series)"
+                      stroke="url(#lineGradient)"
+                      stroke-width="3"
+                      fill="none"
+                      stroke-linecap="round" />
+                    <g *ngFor="let point of state.weeklyData[0].series.slice(0, 6); let i = index">
+                      <circle 
+                        [attr.cx]="getLineChartX(i, state.weeklyData[0].series.length)"
+                        [attr.cy]="getLineChartY(point.value, getMaxValue(state.weeklyData[0].series))"
+                        r="4"
+                        fill="#667eea" />
+                    </g>
+                  </svg>
+                  <div class="line-chart-labels">
+                    <span *ngFor="let item of state.weeklyData[0].series.slice(0, 6)" class="line-label">
+                      Week {{ item.name.split('-')[2] }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Activities Table -->
+      <section class="recent-activities" aria-labelledby="recent-heading">
+        <h2 id="recent-heading" class="section-title">Recent Activities</h2>
+        
+        <div class="activities-table-container" *ngIf="state.activities.length > 0; else noActivitiesTemplate">
+          <table class="activities-table" role="table">
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Activity</th>
+                <th scope="col">Description</th>
+                <th scope="col">Time</th>
+                <th scope="col">Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let activity of state.activities.slice(0, 10); trackBy: trackByActivityId">
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">{{ activity.userName.charAt(0) }}</div>
+                    <span class="user-name">{{ activity.userName }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="activity-type-badge" [ngClass]="'badge-' + activity.activityType">
+                    {{ getActivityTypeDisplayName(activity.activityType) }}
+                  </span>
+                </td>
+                <td class="activity-description">{{ activity.description }}</td>
+                <td class="activity-time">{{ activity.timestamp | date:'short' }}</td>
+                <td class="activity-duration">{{ formatDuration(activity.duration || 0) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #noActivitiesTemplate>
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <h3>No Activities Found</h3>
+            <p>Try adjusting your filters to see more data.</p>
+          </div>
+        </ng-template>
+      </section>
+    </div>
+
+    <!-- No Data Template -->
+    <ng-template #noDataTemplate>
+      <div class="no-data-chart">
+        <div class="no-data-icon">📊</div>
+        <p>No data available for the selected filters</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

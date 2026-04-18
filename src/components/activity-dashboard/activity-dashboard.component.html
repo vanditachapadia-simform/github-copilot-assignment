@@ -198,7 +198,7 @@
                   </svg>
                   <div class="line-chart-labels">
                     <span *ngFor="let item of state.weeklyData[0].series.slice(0, 6)" class="line-label">
-                      Week {{ item.name.split('-')[2] }}
+                      Week of {{ item.name | date:'MMM d' }}
                     </span>
                   </div>
                 </div>

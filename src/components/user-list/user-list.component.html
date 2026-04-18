@@ -1,0 +1,110 @@
+<div class="user-list-container">
+  <div class="user-list-header">
+    <h2>User Management</h2>
+    <div class="header-actions">
+      <button 
+        class="btn btn-primary" 
+        (click)="onRefresh()"
+        [disabled]="(state$ | async)?.loading"
+        aria-label="Refresh user list">
+        <span class="btn-icon">🔄</span>
+        Refresh
+      </button>
+      <button 
+        class="btn btn-secondary" 
+        (click)="onSimulateError()"
+        [disabled]="(state$ | async)?.loading"
+        aria-label="Test error handling">
+        Test Error
+      </button>
+    </div>
+  </div>
+
+  <div class="user-list-content" *ngIf="state$ | async as state">
+    <!-- Loading State -->
+    <div *ngIf="state.loading" class="loading-container" role="status" aria-live="polite">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading users...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="state.error && !state.loading" class="error-container" role="alert">
+      <div class="error-icon">⚠️</div>
+      <div class="error-content">
+        <h3>Oops! Something went wrong</h3>
+        <p>{{ state.error }}</p>
+        <button class="btn btn-primary" (click)="onRefresh()">
+          Try Again
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!state.loading && !state.error && state.users.length === 0" class="empty-container">
+      <div class="empty-icon">👥</div>
+      <h3>No Users Found</h3>
+      <p>There are currently no users to display.</p>
+    </div>
+
+    <!-- Users List -->
+    <div *ngIf="!state.loading && !state.error && state.users.length > 0" class="users-grid">
+      <div 
+        class="user-card" 
+        *ngFor="let user of state.users; trackBy: trackByUserId"
+        (click)="onUserClick(user)"
+        (keydown.enter)="onUserClick(user)"
+        (keydown.space)="onUserClick(user)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'View details for ' + user.name">
+        
+        <div class="user-avatar">
+          {{ user.name.charAt(0).toUpperCase() }}
+        </div>
+        
+        <div class="user-info">
+          <div class="user-header">
+            <h3 class="user-name">{{ user.name }}</h3>
+            <span 
+              class="user-role-badge"
+              [ngClass]="getRoleBadgeClass(user.role)"
+              [attr.aria-label]="'User role: ' + user.role">
+              {{ user.role }}
+            </span>
+          </div>
+          
+          <div class="user-details">
+            <div class="user-detail">
+              <span class="detail-icon">✉️</span>
+              <span class="detail-text">{{ user.email }}</span>
+            </div>
+            
+            <div class="user-detail" *ngIf="user.phone">
+              <span class="detail-icon">📞</span>
+              <span class="detail-text">{{ formatPhoneNumber(user.phone) }}</span>
+            </div>
+            
+            <div class="user-detail">
+              <span class="detail-icon">📅</span>
+              <span class="detail-text">Joined {{ user.createdAt | date:'MMM dd, yyyy' }}</span>
+            </div>
+          </div>
+          
+          <div class="user-status">
+            <span 
+              class="status-indicator"
+              [ngClass]="{ 'active': user.isActive, 'inactive': !user.isActive }"
+              [attr.aria-label]="'User is ' + (user.isActive ? 'active' : 'inactive')">
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div *ngIf="!state.loading && !state.error && state.users.length > 0" class="results-summary">
+      <p>Showing {{ state.users.length }} of {{ state.total }} users</p>
+    </div>
+  </div>
+</div>

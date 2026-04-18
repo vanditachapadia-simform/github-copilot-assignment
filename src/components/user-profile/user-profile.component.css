@@ -1,0 +1,147 @@
+/* ============================================================
+   UserProfileComponent — Scoped Styles
+   Component-scoped styles (frontend rule #5) with dark theme
+   ============================================================ */
+
+:host {
+    display: block;
+}
+
+/* ── Profile Card ──────────────────────────────────────────── */
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border, #334155);
+    background: var(--surface-card, #1e293b);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+}
+
+.profile-card--inactive {
+    opacity: 0.45;
+    filter: grayscale(0.5);
+}
+
+/* ── Avatar ────────────────────────────────────────────────── */
+
+.profile-card__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary, #6366f1);
+}
+
+/* ── Info ──────────────────────────────────────────────────── */
+
+.profile-card__info {
+    text-align: center;
+}
+
+.profile-card__name {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary, #f1f5f9);
+}
+
+.profile-card__role {
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--text-secondary, #94a3b8);
+}
+
+.profile-card__role--admin {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+}
+
+.profile-card__role--editor {
+    background: rgba(6, 182, 212, 0.15);
+    color: #22d3ee;
+}
+
+.profile-card__email {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted, #64748b);
+}
+
+/* ── Skills ────────────────────────────────────────────────── */
+
+.profile-card__skills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-card__skill-tag {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-light, #818cf8);
+    font-size: 0.78rem;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* ── Actions ───────────────────────────────────────────────── */
+
+.profile-card__actions {
+    display: flex;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.profile-card__btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.profile-card__btn:active {
+    transform: scale(0.97);
+}
+
+.profile-card__btn--primary {
+    background: var(--primary, #6366f1);
+    color: #fff;
+}
+
+.profile-card__btn--primary:hover {
+    background: var(--primary-dark, #4f46e5);
+}
+
+.profile-card__btn--secondary {
+    background: var(--surface-elevated, #334155);
+    color: var(--text-primary, #f1f5f9);
+}
+
+.profile-card__btn--secondary:hover {
+    background: #475569;
+}

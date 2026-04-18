@@ -1,0 +1,40 @@
+<!-- User Profile Component Template -->
+<!-- Frontend-scoped rules: accessible template with aria attributes, trackBy in *ngFor -->
+
+<article class="profile-card" [class.profile-card--inactive]="!profile.isActive" role="region"
+    [attr.aria-label]="'Profile card for ' + profile.firstName + ' ' + profile.lastName">
+    <!-- Avatar -->
+    <img class="profile-card__avatar" [src]="profile.avatarUrl"
+        [alt]="profile.firstName + ' ' + profile.lastName + ' avatar'" />
+
+    <!-- Info -->
+    <div class="profile-card__info">
+        <h3 class="profile-card__name">
+            {{ profile.firstName }} {{ profile.lastName }}
+        </h3>
+        <span class="profile-card__role" [class.profile-card__role--admin]="profile.role === 'admin'"
+            [class.profile-card__role--editor]="profile.role === 'editor'" [attr.aria-label]="'Role: ' + profile.role">
+            {{ profile.role | titlecase }}
+        </span>
+        <p class="profile-card__email">{{ profile.email }}</p>
+    </div>
+
+    <!-- Skills — trackBy for optimised rendering (frontend rule #6) -->
+    <ul class="profile-card__skills" aria-label="Skills">
+        <li *ngFor="let skill of profile.skills; trackBy: trackBySkillId" class="profile-card__skill-tag">
+            {{ skill.label }}
+        </li>
+    </ul>
+
+    <!-- Actions -->
+    <div class="profile-card__actions">
+        <button class="profile-card__btn profile-card__btn--primary" (click)="onViewDetails()"
+            [attr.aria-label]="'View details for ' + profile.firstName">
+            View Details
+        </button>
+        <button class="profile-card__btn profile-card__btn--secondary" (click)="onContact()"
+            [attr.aria-label]="'Contact ' + profile.firstName">
+            Contact
+        </button>
+    </div>
+</article>

@@ -1,0 +1,184 @@
+<!-- App Component Template -->
+<div class="app-shell">
+    <!-- Header -->
+    <header class="header">
+        <div class="header__inner container">
+            <h1 class="header__title">
+                <span class="header__icon">🤖</span>
+                Copilot Instructions Demo
+            </h1>
+            <p class="header__subtitle">
+                Showing how scoped rules shape generated code
+            </p>
+        </div>
+    </header>
+
+    <main class="main container">
+        <!-- Section 1: Backend Utility Demo -->
+        <section class="section" aria-labelledby="backend-heading">
+            <div class="section__header">
+                <h2 id="backend-heading" class="section__title">
+                    <span class="badge badge--general">General Rules</span>
+                    Backend Utility — String Utils
+                </h2>
+                <p class="section__desc">
+                    These results come from <code>src/utils/string-utils.ts</code>,
+                    which follows only the general Copilot instructions.
+                </p>
+            </div>
+
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3 class="demo-card__title">capitalize()</h3>
+                    <div class="demo-card__result">
+                        <span class="demo-card__label">Input:</span>
+                        <code>"hello world"</code>
+                    </div>
+                    <div class="demo-card__result">
+                        <span class="demo-card__label">Output:</span>
+                        <code class="demo-card__output">{{ capitalizeResult }}</code>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <h3 class="demo-card__title">slugify()</h3>
+                    <div class="demo-card__result">
+                        <span class="demo-card__label">Input:</span>
+                        <code>"Hello World! Angular Demo"</code>
+                    </div>
+                    <div class="demo-card__result">
+                        <span class="demo-card__label">Output:</span>
+                        <code class="demo-card__output">{{ slugifyResult }}</code>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <h3 class="demo-card__title">truncate()</h3>
+                    <div class="demo-card__result">
+                        <span class="demo-card__label">Input:</span>
+                        <code>"The quick brown fox jumps over the lazy dog"</code>
+                    </div>
+                    <div class="demo-card__result">
+                        <span class="demo-card__label">Output:</span>
+                        <code class="demo-card__output">{{ truncateResult }}</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Frontend Component Demo -->
+        <section class="section" aria-labelledby="frontend-heading">
+            <div class="section__header">
+                <h2 id="frontend-heading" class="section__title">
+                    <span class="badge badge--scoped">General + Frontend Rules</span>
+                    Frontend Component — User Profile
+                </h2>
+                <p class="section__desc">
+                    This component lives in <code>src/components/</code> and follows
+                    both general and frontend-scoped Copilot instructions.
+                </p>
+            </div>
+
+            <div class="profile-grid">
+                <app-user-profile *ngFor="let user of sampleUsers; trackBy: trackByUserId" [profile]="user"
+                    (viewDetails)="onViewDetails($event)" (contact)="onContact($event)"></app-user-profile>
+            </div>
+
+            <!-- Event log -->
+            <div class="event-log" *ngIf="eventLog.length > 0">
+                <h3 class="event-log__title">Event Log</h3>
+                <ul class="event-log__list">
+                    <li *ngFor="let event of eventLog" class="event-log__item">
+                        {{ event }}
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 3: User List Component Demo -->
+        <section class="section" aria-labelledby="user-list-heading">
+            <div class="section__header">
+                <h2 id="user-list-heading" class="section__title">
+                    <span class="badge badge--scoped">General + Frontend Rules</span>
+                    Frontend Component — User List Management
+                </h2>
+                <p class="section__desc">
+                    This component demonstrates a complete user management interface with
+                    mock API integration, error handling, and responsive design.
+                </p>
+            </div>
+
+            <app-user-list></app-user-list>
+        </section>
+
+        <!-- Section 4: Rule Comparison -->
+        <section class="section" aria-labelledby="comparison-heading">
+            <div class="section__header">
+                <h2 id="comparison-heading" class="section__title">
+                    Instruction Scope Comparison
+                </h2>
+            </div>
+
+            <div class="comparison-table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Rule</th>
+                            <th>string-utils.ts <span class="badge badge--general badge--sm">General</span></th>
+                            <th>user-profile.component.ts <span class="badge badge--scoped badge--sm">Scoped</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Naming conventions</td>
+                            <td>✅ camelCase / PascalCase</td>
+                            <td>✅ camelCase / PascalCase + kebab-case files</td>
+                        </tr>
+                        <tr>
+                            <td>Strict TypeScript</td>
+                            <td>✅ All typed, no any</td>
+                            <td>✅ Interfaces for all models + strict mode</td>
+                        </tr>
+                        <tr>
+                            <td>JSDoc comments</td>
+                            <td>✅ All public functions</td>
+                            <td>✅ All &#64;Input/&#64;Output</td>
+                        </tr>
+                        <tr>
+                            <td>OnPush change detection</td>
+                            <td>—</td>
+                            <td>✅ Frontend rule</td>
+                        </tr>
+                        <tr>
+                            <td>&#64;Input / &#64;Output pattern</td>
+                            <td>—</td>
+                            <td>✅ Smart/dumb split</td>
+                        </tr>
+                        <tr>
+                            <td>trackBy in *ngFor</td>
+                            <td>—</td>
+                            <td>✅ Frontend rule</td>
+                        </tr>
+                        <tr>
+                            <td>Component-scoped styles</td>
+                            <td>—</td>
+                            <td>✅ Frontend rule</td>
+                        </tr>
+                        <tr>
+                            <td>Accessibility (aria)</td>
+                            <td>—</td>
+                            <td>✅ Frontend rule</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Built with Angular 17 · GitHub Copilot Custom Instructions Demo</p>
+        </div>
+    </footer>
+</div>
